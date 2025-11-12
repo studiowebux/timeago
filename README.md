@@ -2,6 +2,9 @@
 
 Simple CLI tool to help with epoch timestamps and allows some manipulations.
 
+Available in two implementations:
+- **Go** - Portable binary with pipe-friendly output
+
 # Help
 
 ```text
@@ -69,12 +72,49 @@ NOTES:
   - Past timestamps are formatted as "X time ago"
 ```
 
-# Installation:
+# Installation
+
+## Go Version
+
+### Using go install
 
 ```bash
-deno compile --output timeago timeago.ts
+go install github.com/studiowebux/timeago@latest
+```
+
+### Building from source
+
+```bash
+go build -o timeago main.go
 chmod +x ./timeago
 sudo mv ./timeago /usr/local/bin/
+```
+
+### Dependencies
+
+```bash
+go get golang.org/x/term
+```
+
+## Piped Output Behavior (Go Version Only)
+
+The Go version automatically detects when output is piped and adjusts its behavior:
+
+- **Terminal (TTY)**: Displays full formatted output with labels
+- **Piped**: Outputs only the result epoch timestamp (no labels)
+
+This makes it easy to use in shell scripts and pipelines:
+
+```bash
+# Get current timestamp for use in other tools
+timeago | xargs -I {} echo "Timestamp: {}"
+
+# Add 2 hours and pipe to another command
+timeago --add "2 hours" | cat
+
+# Use in shell variable
+FUTURE=$(timeago --add "1 day")
+echo "Tomorrow's timestamp: $FUTURE"
 ```
 
 # Tests / Examples
