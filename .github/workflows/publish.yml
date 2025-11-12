@@ -22,7 +22,7 @@ jobs:
 
       - name: Build
         run: |
-          go build -o timeago-${{ matrix.platform }} main.go
+          go build -o bin/timeago-${{ matrix.platform }} main.go
           chmod +x ./timeago-${{ matrix.platform }}
 
       - name: Release
