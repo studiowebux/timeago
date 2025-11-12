@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: |
           go build -o bin/timeago-${{ matrix.platform }} main.go
-          chmod +x ./timeago-${{ matrix.platform }}
+          chmod +x bin/timeago-${{ matrix.platform }}
 
       - name: Release
         uses: softprops/action-gh-release@v2
