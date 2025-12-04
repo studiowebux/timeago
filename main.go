@@ -246,6 +246,7 @@ func main() {
 	// Find precision flag (-p) anywhere in args
 	precision := 1
 	precisionIdx := -1
+	precisionValueIdx := -1
 	for i, arg := range args {
 		if arg == "-p" {
 			precisionIdx = i
@@ -253,12 +254,24 @@ func main() {
 				p, err := strconv.Atoi(args[i+1])
 				if err == nil && p >= 1 && p <= 7 {
 					precision = p
+					precisionValueIdx = i + 1
 				} else {
 					fmt.Fprintf(os.Stderr, "Error: -p requires a value between 1 and 7\n")
 					os.Exit(1)
 				}
 			} else {
 				fmt.Fprintf(os.Stderr, "Error: -p requires a value\n")
+				os.Exit(1)
+			}
+			break
+		} else if strings.HasPrefix(arg, "-p") && len(arg) > 2 {
+			// Handle -p2 format (no space)
+			precisionIdx = i
+			p, err := strconv.Atoi(arg[2:])
+			if err == nil && p >= 1 && p <= 7 {
+				precision = p
+			} else {
+				fmt.Fprintf(os.Stderr, "Error: -p requires a value between 1 and 7\n")
 				os.Exit(1)
 			}
 			break
@@ -289,7 +302,7 @@ func main() {
 				continue
 			}
 			// Skip -p flag and its value
-			if i == precisionIdx || i == precisionIdx+1 {
+			if i == precisionIdx || (precisionValueIdx >= 0 && i == precisionValueIdx) {
 				continue
 			}
 
@@ -345,14 +358,16 @@ func main() {
 	// Handle timestamp conversion (no operation flag)
 	var epochMs int64
 	var err error
+	foundTimestamp := false
 
 	// Find the timestamp (skip -p flag and its value)
 	for i, arg := range args {
-		if i == precisionIdx || i == precisionIdx+1 {
+		if i == precisionIdx || (precisionValueIdx >= 0 && i == precisionValueIdx) {
 			continue
 		}
 		epochMs, err = strconv.ParseInt(arg, 10, 64)
 		if err == nil {
+			foundTimestamp = true
 			// If no -p was specified and there's another arg that's 1-7, use it as precision
 			if precisionIdx == -1 && i+1 < len(args) {
 				p, errP := strconv.Atoi(args[i+1])
@@ -364,7 +379,7 @@ func main() {
 		}
 	}
 
-	if err != nil {
+	if !foundTimestamp {
 		fmt.Fprintf(os.Stderr, "Error: Invalid epoch timestamp\n")
 		os.Exit(1)
 	}

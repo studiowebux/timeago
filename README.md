@@ -20,8 +20,11 @@ MODES:
     Shows current time in epoch, UTC, and local formats
 
   Convert timestamp:
+    timeago <EPOCH_TIMESTAMP> [PRECISION]
     timeago <EPOCH_TIMESTAMP> -p <PRECISION>
+    timeago <EPOCH_TIMESTAMP> -p<PRECISION>
     Shows the timestamp in multiple formats with relative time
+    PRECISION: 1-7 (default: 1) - number of time units to display
 
   Add time:
     timeago --add <TIME> [EPOCH_TIMESTAMP] [-p PRECISION]
@@ -36,7 +39,8 @@ OPTIONS:
   --help, -h     Show this help message
   --add          Add time to a timestamp
   --remove       Remove time from a timestamp
-  -p             Set precision (1-7)
+  -p <N>         Set precision (1-7, can be placed anywhere in arguments)
+  -p<N>          Set precision without space (e.g., -p2)
 
 ARGUMENTS:
   EPOCH_TIMESTAMP    Unix timestamp in milliseconds
@@ -45,8 +49,9 @@ ARGUMENTS:
 FLEXIBLE ARGUMENT ORDER:
   Arguments can appear in any order. All of these are valid:
   - timeago 1761878691116 --add "2 hours" -p 3
-  - timeago --add "2 hours" 1761878691116 -p 3
+  - timeago --add "2 hours" 1761878691116 -p3
   - timeago --add "2 hours" -p 3 1761878691116
+  - timeago 1761878691116 2 (positional precision)
 
 EXAMPLES:
   timeago
@@ -55,8 +60,14 @@ EXAMPLES:
   timeago 1761878691116
     Convert epoch to time ago with default precision (1 unit)
 
+  timeago 1761878691116 2
+    Convert epoch with precision of 2 units (positional argument)
+
   timeago 1761878691116 -p 3
-    Convert epoch with precision of 3 units (using -p flag)
+    Convert epoch with precision of 3 units (using -p flag with space)
+
+  timeago 1761878691116 -p3
+    Convert epoch with precision of 3 units (using -p flag without space)
 
   timeago --add "2 hours"
     Add 2 hours to current timestamp
